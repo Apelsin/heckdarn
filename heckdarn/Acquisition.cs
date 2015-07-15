@@ -21,10 +21,12 @@ namespace heckdarn
         {
             Screen = screen;
             Open();
+            Capture();
         }
         public void Dispose()
         {
-            Close();
+            Post();
+            Finish();
             Screen.Acquired = null;
             Screen = null;
         }
@@ -33,7 +35,9 @@ namespace heckdarn
             if (Screen.Acquired != null)
                 throw new InvalidOperationException("Screen already acquired in another context.");
             Screen.Acquired = this;
-
+        }
+        public void Capture()
+        {
             OutputDuplicateFrameInformation duplicate_frame_info;
             Screen.DuplicatedOutput.AcquireNextFrame(1000, out duplicate_frame_info, out FrameResource);
 
@@ -41,10 +45,13 @@ namespace heckdarn
             using(Texture2D screen_texture = FrameResource.QueryInterfaceOrNull<Texture2D>())
                 Screen.Device.ImmediateContext.CopyResource(screen_texture, Screen.Texture);
         }
-        protected void Close()
+        public void Post()
+        {
+            // TODO
+        }
+        protected void Finish()
         {
             // Free resources
-            Screen.Device.ImmediateContext.UnmapSubresource(Screen.Texture, 0);
             FrameResource.Dispose();
             Screen.DuplicatedOutput.ReleaseFrame();
         }

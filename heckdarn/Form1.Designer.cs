@@ -57,9 +57,10 @@
             this.pbWindowPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbWindowPreview.Location = new System.Drawing.Point(13, 13);
+            this.pbWindowPreview.Location = new System.Drawing.Point(0, -23);
+            this.pbWindowPreview.Margin = new System.Windows.Forms.Padding(0);
             this.pbWindowPreview.Name = "pbWindowPreview";
-            this.pbWindowPreview.Size = new System.Drawing.Size(468, 347);
+            this.pbWindowPreview.Size = new System.Drawing.Size(490, 398);
             this.pbWindowPreview.TabIndex = 1;
             this.pbWindowPreview.TabStop = false;
             // 

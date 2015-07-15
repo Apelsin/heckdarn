@@ -18,7 +18,7 @@ namespace heckdarn
     {
         internal Acquisition Acquired;
 
-        internal Texture2DDescription TextureDescription;
+        internal Texture2DDescription CaptureTextureDescription;
         internal Device Device;
         internal OutputDuplication DuplicatedOutput;
         internal Factory2 Factory;
@@ -40,9 +40,9 @@ namespace heckdarn
             Output = Factory.Adapters1[0].Outputs[0];
             Width = Output.Description.DesktopBounds.Width;
             Height = Output.Description.DesktopBounds.Height;
-            TextureDescription = new Texture2DDescription()
+            CaptureTextureDescription = new Texture2DDescription()
             {
-                CpuAccessFlags = CpuAccessFlags.Read | CpuAccessFlags.Write,
+                CpuAccessFlags = CpuAccessFlags.Read,
                 BindFlags = BindFlags.None,
                 Format = Format.B8G8R8A8_UNorm,
                 Width = Width,
@@ -55,11 +55,12 @@ namespace heckdarn
             };
             Output1 = new Output1(Output.NativePointer);
             DuplicatedOutput = Output1.DuplicateOutput(Device);
-            Texture = new Texture2D(Device, TextureDescription);
+            Texture = new Texture2D(Device, CaptureTextureDescription);
             DataBox = Device.ImmediateContext.MapSubresource(Texture, 0, MapMode.Read, SharpDX.Direct3D11.MapFlags.None);
         }
         public void Dispose()
         {
+            Device.ImmediateContext.UnmapSubresource(Texture, 0);
             Texture.Dispose();
             DuplicatedOutput.Dispose();
             Factory.Dispose();
