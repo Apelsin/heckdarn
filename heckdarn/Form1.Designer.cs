@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.lblProcessStatus = new System.Windows.Forms.Label();
+            this.lblInfo = new System.Windows.Forms.Label();
+            this.pbWindowPreview = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pbWindowPreview)).BeginInit();
             this.SuspendLayout();
             // 
             // lblProcessStatus
@@ -40,14 +43,37 @@
             this.lblProcessStatus.TabIndex = 0;
             this.lblProcessStatus.Text = "lblProcessStatus";
             // 
+            // lblInfo
+            // 
+            this.lblInfo.AutoSize = true;
+            this.lblInfo.Location = new System.Drawing.Point(13, 26);
+            this.lblInfo.Name = "lblInfo";
+            this.lblInfo.Size = new System.Drawing.Size(35, 13);
+            this.lblInfo.TabIndex = 0;
+            this.lblInfo.Text = "lblInfo";
+            // 
+            // pbWindowPreview
+            // 
+            this.pbWindowPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pbWindowPreview.Location = new System.Drawing.Point(13, 13);
+            this.pbWindowPreview.Name = "pbWindowPreview";
+            this.pbWindowPreview.Size = new System.Drawing.Size(468, 347);
+            this.pbWindowPreview.TabIndex = 1;
+            this.pbWindowPreview.TabStop = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(493, 144);
+            this.ClientSize = new System.Drawing.Size(493, 372);
+            this.Controls.Add(this.lblInfo);
             this.Controls.Add(this.lblProcessStatus);
+            this.Controls.Add(this.pbWindowPreview);
             this.Name = "Form1";
             this.Text = "Form1";
+            ((System.ComponentModel.ISupportInitialize)(this.pbWindowPreview)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -56,6 +82,8 @@
         #endregion
 
         private System.Windows.Forms.Label lblProcessStatus;
+        private System.Windows.Forms.Label lblInfo;
+        private System.Windows.Forms.PictureBox pbWindowPreview;
     }
 }
 
