@@ -20,8 +20,15 @@ namespace heckdarn
     {
         private delegate void UpdatePreviewDelegate(Image image);
         private HeckDarn Self;
-        private Bitmap PreviewImage;
+        private Bitmap OverlayImage;
         public Dictionary<string, object> StatusInfo;
+        private Stopwatch OverlayUpdateTimer;
+        private double OverlayUpdateTime;
+
+        protected int CaptureIndex = 0;
+        protected float[] CaptureTimes = new float[5];
+        public double CapturesPerSecond { get; private set; }
+
         public Form1()
         {
             InitializeComponent();
@@ -29,12 +36,30 @@ namespace heckdarn
             Self = new HeckDarn(Handle);
             Self.MainUpdate += HandleMainUpdate;
 
-            int width = Self.Screen.Width;
-            int height = Self.Screen.Height;
-            PreviewImage = new Bitmap(width, height, PixelFormat.Format32bppArgb);
-            pbWindowPreview.Image = PreviewImage;
+            OverlayUpdateTime = 1.0 / 20.0;
+            OverlayUpdateTimer = new Stopwatch();
+            OverlayUpdateTimer.Start();
+
+            // Remove all borders from the window
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            // Get the style flags for the window and add transparent & layered flags
+            int wl = Window.GetWindowLong(this.Handle, Window.GWL.ExStyle);
+            wl = wl | 0x80000 | 0x20; // Transparent | Layered
+            // Apply the style flags
+            Window.SetWindowLong(Handle, Window.GWL.ExStyle, wl);
+            // Make the window visible by setting the alpha (opacity)
+            Window.SetLayeredWindowAttributes(Handle, 0, 255, Window.LWA.Alpha);
 
             Self.Start();
+        }
+        protected void CreateOverlayImage(Size size)
+        {
+            pbOverlay.Image = OverlayImage = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
+        }
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            
         }
         private int i = 0;
         private int j = 0;
@@ -59,52 +84,36 @@ namespace heckdarn
             }
             if (Self.TargetProcess != null)
             {
-                try
+                IntPtr target_handle = Self.TargetProcess.MainWindow.Handle;
+                Rectangle target_rect = Self.TargetProcess.MainWindow.GetWindowRect();
+                Size target_size = target_rect.Size;
+                if (OverlayUpdateTimer.Elapsed.TotalSeconds > OverlayUpdateTime)
                 {
-                    using (var acquisition = Self.Screen.Acquire())
+                    Invoke((MethodInvoker)(() => { DrawingControl.SuspendDrawing(pbOverlay); }));
+                    if (OverlayImage == null || OverlayImage.Size != target_size)
                     {
-                        int width = Self.Screen.Width;
-                        int height = Self.Screen.Height;
-                        Rectangle bounds = new Rectangle(0, 0, width, height);
-
-                        // Copy pixels from screen capture Texture to GDI bitmap
-                        SharpDX.DataBox source = Self.Screen.DataBox;
-
-                        pbWindowPreview.Invoke((MethodInvoker)(() => { DrawingControl.SuspendDrawing(pbWindowPreview); }));
-                        BitmapData destination = PreviewImage.LockBits(bounds, ImageLockMode.WriteOnly, PreviewImage.PixelFormat);
-
-                        IntPtr src_p = source.DataPointer;
-                        IntPtr dst_p = destination.Scan0;
-
-                        for (int y = 0; y < height; y++)
-                        {
-                            // Copy a single line 
-                            SharpDX.Utilities.CopyMemory(dst_p, src_p, width * 4);
-
-                            // Advance pointers
-                            src_p = IntPtr.Add(src_p, source.RowPitch);
-                            dst_p = IntPtr.Add(dst_p, destination.Stride);
-                        }
-
-                        PreviewImage.UnlockBits(destination);
-                        pbWindowPreview.Invoke((MethodInvoker)(() => { DrawingControl.ResumeDrawing(pbWindowPreview); }));
-                        pbWindowPreview.Invoke((MethodInvoker)pbWindowPreview.Invalidate);
+                        CreateOverlayImage(target_size);
                     }
+                    using (Graphics gfx = Graphics.FromImage(OverlayImage))
+                    {
+                        Self.TargetProcess.MainWindow.Capture(gfx);
+                        Self.TargetProcess.MainWindow.FilterOverlay(OverlayImage);
+                    }
+                    Invoke((MethodInvoker)(() => { DrawingControl.ResumeDrawing(pbOverlay); }));
+                    CaptureTimes[CaptureIndex] = (float)OverlayUpdateTimer.Elapsed.TotalSeconds;
+                    CaptureIndex = (CaptureIndex + 1) % CaptureTimes.Length;
+                    CapturesPerSecond = HeckDarn.CalculateInverseAverage(CaptureTimes);
+                    OverlayUpdateTimer.Restart();
                 }
-                catch (SharpDX.SharpDXException e)
+                Invoke((MethodInvoker)(() =>
                 {
-                    if (e.ResultCode.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
-                    {
-                        // Probably nothing updated; just try again.
-                        //Console.WriteLine("Timed out while trying to acquire result; retrying...");
-                        return;
-                    }
-                    else
-                    {
-                        throw e;
-                    }
-                }
-                StatusInfo["FPS"] = (int)Self.FramesPerSecond;
+                    Window.SetWindowRect(Handle, target_rect);
+                    Window.SetWindowLong(Handle, Window.GWL.Parent, (int)target_handle);
+                }));
+                
+                StatusInfo["UpdateFPS"] = (int)Self.FramesPerSecond;
+                StatusInfo["CaptureFPS"] = (int)CapturesPerSecond;
+
             }
             List<string> status_info_list = new List<string>();
             foreach (var entry in StatusInfo)
@@ -121,7 +130,7 @@ namespace heckdarn
                 e.Cancel = true;
                 Self.Stop(() => { Invoke((MethodInvoker)Close); });
             }
-                
+
         }
     }
 }

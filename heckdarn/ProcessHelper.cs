@@ -19,7 +19,7 @@ namespace heckdarn
         }
         public static IEnumerable<ProcessHelper> FindAllByName(string name)
         {
-            Process[] processes = Process.GetProcessesByName("Skype");
+            Process[] processes = Process.GetProcessesByName(name);
             if (processes == null || processes.Length == 0)
             {
                 throw new Exception("Could not find process.");

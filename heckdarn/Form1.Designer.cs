@@ -30,8 +30,8 @@
         {
             this.lblProcessStatus = new System.Windows.Forms.Label();
             this.lblInfo = new System.Windows.Forms.Label();
-            this.pbWindowPreview = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWindowPreview)).BeginInit();
+            this.pbOverlay = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pbOverlay)).BeginInit();
             this.SuspendLayout();
             // 
             // lblProcessStatus
@@ -52,29 +52,27 @@
             this.lblInfo.TabIndex = 0;
             this.lblInfo.Text = "lblInfo";
             // 
-            // pbWindowPreview
+            // pbOverlay
             // 
-            this.pbWindowPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbWindowPreview.Location = new System.Drawing.Point(0, -23);
-            this.pbWindowPreview.Margin = new System.Windows.Forms.Padding(0);
-            this.pbWindowPreview.Name = "pbWindowPreview";
-            this.pbWindowPreview.Size = new System.Drawing.Size(490, 398);
-            this.pbWindowPreview.TabIndex = 1;
-            this.pbWindowPreview.TabStop = false;
+            this.pbOverlay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pbOverlay.Location = new System.Drawing.Point(0, 0);
+            this.pbOverlay.Margin = new System.Windows.Forms.Padding(0);
+            this.pbOverlay.Name = "pbOverlay";
+            this.pbOverlay.Size = new System.Drawing.Size(484, 461);
+            this.pbOverlay.TabIndex = 1;
+            this.pbOverlay.TabStop = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(493, 372);
+            this.ClientSize = new System.Drawing.Size(484, 461);
             this.Controls.Add(this.lblInfo);
             this.Controls.Add(this.lblProcessStatus);
-            this.Controls.Add(this.pbWindowPreview);
+            this.Controls.Add(this.pbOverlay);
             this.Name = "Form1";
             this.Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)(this.pbWindowPreview)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbOverlay)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -84,7 +82,7 @@
 
         private System.Windows.Forms.Label lblProcessStatus;
         private System.Windows.Forms.Label lblInfo;
-        private System.Windows.Forms.PictureBox pbWindowPreview;
+        private System.Windows.Forms.PictureBox pbOverlay;
     }
 }
 

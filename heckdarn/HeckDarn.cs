@@ -26,13 +26,12 @@ namespace heckdarn
         public event MainUpdateHandler MainUpdate;
         public int MainUpdatePeriod { get; set; }
         public ProcessHelper TargetProcess { get; set; }
-        public Screen Screen { get; set; }
 
         private Thread UpdateThread;
         private CancellationTokenSource Exiting;
 
         protected int FrameIndex = 0;
-        protected double[] FrameTimes = new double[5];
+        protected float[] FrameTimes = new float[5];
         protected Stopwatch FrameTimer = new Stopwatch();
 
         private MethodInvoker PostMonitorProcess;
@@ -48,7 +47,6 @@ namespace heckdarn
 
         public HeckDarn(IntPtr output_handle)
         {
-            Screen = new Screen(output_handle);
         }
         public void Start()
         {
@@ -80,17 +78,17 @@ namespace heckdarn
                 int sleep_time = MainUpdatePeriod - (int)FrameTimer.ElapsedMilliseconds;
                 sleep_time = Math.Max(0, sleep_time);
                 Thread.Sleep(sleep_time);
-                FrameTimes[FrameIndex] = FrameTimer.Elapsed.TotalSeconds;
+                FrameTimes[FrameIndex] = (float)FrameTimer.Elapsed.TotalSeconds;
                 FrameIndex = (FrameIndex + 1) % FrameTimes.Length;
-                CalculateFramesPerSecond();
+                FramesPerSecond = CalculateInverseAverage(FrameTimes);
             }
         }
-        private void CalculateFramesPerSecond()
+        public static float CalculateInverseAverage(float[] numbers)
         {
-            double sum = 0.0;
-            foreach (double time in FrameTimes)
-                sum += time;
-            FramesPerSecond = FrameTimes.Length / sum;
+            float sum = 0.0f;
+            foreach (float number in numbers)
+                sum += number;
+            return numbers.Length / sum;
         }
     }
 }
