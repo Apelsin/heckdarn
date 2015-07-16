@@ -11,12 +11,6 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 
-using SharpDX;
-using SharpDX.DXGI;
-using SharpDX.Direct3D;
-using SharpDX.Direct3D11;
-using Device = SharpDX.Direct3D11.Device;
-using Resource = SharpDX.DXGI.Resource;
 namespace heckdarn
 {
     public class HeckDarn
